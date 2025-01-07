@@ -5,23 +5,53 @@ const appError = require("../utils/AppError")
 const sqliteConnection = require("../database/sqlite")
 class FoodsController {
   async mainDishes(request, response) {
-    const { name, price, description } = request.body
+    const { name, price, description, tags } = request.body
 
-    await knex("foods").insert({ name, price, description })
+    const [food_id] = await knex("foods").insert({ name, price, description })
 
+    const tagsInsert = tags.map((name) => {
+      return {
+        name,
+        food_id,
+      }
+    })
+
+    await knex("tagsFoods").insert(tagsInsert)
     return response.status(201).json()
   }
   async desserts(request, response) {
-    const { name, price, description } = request.body
+    const { name, price, description, tags } = request.body
 
-    await knex("desserts").insert({ name, price, description })
+    const [dessert_id] = await knex("desserts").insert({
+      name,
+      price,
+      description,
+    })
+
+    const tagsInsert = tags.map((name) => {
+      return {
+        name,
+        dessert_id,
+      }
+    })
+
+    await knex("tagsDesserts").insert(tagsInsert)
 
     return response.status(201).json()
   }
   async drinks(request, response) {
-    const { name, price, description } = request.body
+    const { name, price, description, tags } = request.body
 
-    await knex("drinks").insert({ name, price, description })
+   const [drink_id] = await knex("drinks").insert({ name, price, description })
+
+   const tagsInsert = tags.map((name) => {
+     return {
+       name,
+       drink_id,
+     }
+   })
+
+   await knex("tagsDrinks").insert(tagsInsert)
 
     return response.status(201).json()
   }
