@@ -2,6 +2,7 @@ const { query } = require("express")
 const knex = require("../database/knex")
 const appError = require("../utils/AppError")
 
+const sqliteConnection = require("../database/sqlite")
 class FoodsController {
   async mainDishes(request, response) {
     const { name, price, description } = request.body
@@ -56,7 +57,6 @@ class FoodsController {
   }
   async show(request, response) {
     const { name } = request.query
-    console.log(name)
     let foods
 
     foods = await knex("foods").where({ name })
@@ -65,7 +65,6 @@ class FoodsController {
         ...food,
       }
     })
-    console.log(resultFoods)
     return response.json(resultFoods)
   }
   async showDrink(request, response) {
@@ -93,13 +92,35 @@ class FoodsController {
     return response.json(resultDesserts)
   }
   async delete(request, response) {
-    const { name } = request.body
+    const { id } = request.query
 
-    await knex("foods").where({ name }).delete()
-    await knex("drinks").where({ name }).delete()
-    await knex("desserts").where({ name }).delete()
+    await knex("foods").where({ id }).delete()
+    await knex("drinks").where({ id }).delete()
+    await knex("desserts").where({ id }).delete()
 
-    return response.json(`${name} excluido`)
+    return response.json(`${id} excluido`)
+  }
+  async update(request, response) {
+    const {type, id} = request.query
+    const {name, price, description} = request.body
+   
+     const database = await sqliteConnection()
+     const food = await database.get(`SELECT * FROM ${type} WHERE id = (?)`, [id])
+
+     food.name = name ?? food.name
+     food.price = price ?? food.price
+     food.description = description ?? food.description
+
+     await database.run(
+      `UPDATE ${type} SET
+      name = ?,
+      price = ?,
+      description = ?,
+      updated_at = DATETIME('now')
+      WHERE id = ?`,
+      [food.name, food.price, food.description, id]
+    )
+  return response.status(200).json();
   }
 }
 

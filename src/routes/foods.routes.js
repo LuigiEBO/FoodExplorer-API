@@ -14,16 +14,21 @@ const foodImgController = new FoodsImgController()
 foodsRouter.use(ensureAuthenticated)
 
 foodsRouter.post("/main", verifyUserVerification("admin"), foodsController.mainDishes)
-foodsRouter.post("/drinks", verifyUserVerification("admin"), foodsController.drinks)
-foodsRouter.post("/desserts", verifyUserVerification("admin"), foodsController.desserts)
+foodsRouter.post("/drink", verifyUserVerification("admin"), foodsController.drinks)
+foodsRouter.post("/dessert", verifyUserVerification("admin"), foodsController.desserts)
+foodsRouter.put(
+  "/update",
+  verifyUserVerification("admin"),
+  foodsController.update
+)
 foodsRouter.get("/", foodsController.index)
 foodsRouter.get("/show", foodsController.show)
 foodsRouter.get("/showDrink", foodsController.showDrink)
 foodsRouter.get("/showDessert", foodsController.showDessert)
 foodsRouter.delete("/delete", verifyUserVerification("admin"), foodsController.delete)
-foodsRouter.patch("/imgFood/:nameFood", verifyUserVerification("admin"), upload.single("img"), foodImgController.update)
-foodsRouter.patch("/imgDrink/:nameDrink",verifyUserVerification("admin"),upload.single("img"),foodImgController.updateDrink)
-foodsRouter.patch("/imgDessert/:nameDessert", verifyUserVerification("admin"), upload.single("img"),foodImgController.updateDessert
+foodsRouter.patch("/mainImg/:nameFood", verifyUserVerification("admin"), upload.single("img"), foodImgController.update)
+foodsRouter.patch("/drinkImg/:nameDrink",verifyUserVerification("admin"),upload.single("img"),foodImgController.updateDrink)
+foodsRouter.patch("/dessertImg/:nameDessert", verifyUserVerification("admin"), upload.single("img"),foodImgController.updateDessert
 )
 
 module.exports = foodsRouter
