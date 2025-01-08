@@ -14,7 +14,6 @@ class TagsController {
   }
   async dessertTags(request, response) {
     const {id} = request.query
-    console.log(id)
     const tags = await knex("tagsDesserts").whereLike("dessert_id", `${id}`).groupBy("name")
 
     return response.json(tags)
